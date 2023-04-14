@@ -18,6 +18,12 @@ use parity_scale_codec::{self as scale, Decode,Encode,Input,Output};
 // type ScaleResult<T> = Result<T,scale::Error>;
 
 
+pub mod rw;
+use rw::*;
+
+// #[cfg(feature = "projective")]
+pub mod projective;
+
 #[cfg(test)]
 mod tests;
 
@@ -59,116 +65,6 @@ pub const WIRE: Usage = make_usage(Compress::Yes, Validate::Yes);
 /// only for usage in host calls where the runtime already performed
 /// validation checks.
 pub const HOST_CALL: Usage = make_usage(Compress::No, Validate::No);
-
-
-/*
-/// Arkworks' serialization modes.
-pub trait Usage {
-    const COMPRESS: Compress = Compress::Yes;
-    const VALIDATE: Validate = Validate::Yes;
-}
-
-/// ArkScale usage for typical wire formats, like block data and gossip messages.  Always safe.
-pub struct Wire;
-impl Usage for Wire {
-    const COMPRESS: Compress = Compress::Yes;
-    const VALIDATE: Validate = Validate::Yes;
-}
-
-/// ArkScale usage which neither compresses nor validates inputs,
-/// only for usage in host calls where the runtime already performed
-/// validation checks.
-pub struct HostCall;
-impl Usage for HostCall {
-    const COMPRESS: Compress = Compress::No;
-    const VALIDATE: Validate = Validate::No;
-}
-*/
-
-/// Scale `Input` error wrapped for passage through Arkworks' `CanonicalDeserialize`
-#[derive(Clone,Debug)]
-#[repr(transparent)]
-pub struct ArkScaleError(pub scale::Error);
-
-impl fmt::Display for ArkScaleError {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> Result<(), fmt::Error> {
-        // use fmt::Display;
-        self.0.fmt(f)
-    }
-}
-
-impl ark_std::error::Error for ArkScaleError {}  // No source to return
-
-fn scale_error_to_ark_error(error: scale::Error) -> io::Error {
-    io::Error::new(io::ErrorKind::UnexpectedEof, ArkScaleError(error))
-}
-
-fn ark_error_to_scale_error(error: SerializationError) -> scale::Error {
-    use SerializationError::*;
-    // println!("{:?}",&error);
-    match error {
-        NotEnoughSpace => "Arkworks deserialization failed: NotEnoughSpace".into(),
-        InvalidData => "Arkworks deserialization failed: InvalidData".into(),
-        UnexpectedFlags => "Arkworks deserialization failed: UnexpectedFlags".into(),
-        IoError(io_error) => {
-            let err_msg: scale::Error = "Arkworks deserialization io error".into();
-            let err_msg = err_msg.chain(format!("{}",&io_error));
-            // ark_std::Error lacks downcasting https://github.com/arkworks-rs/std/issues/44
-            #[cfg(feature = "std")]
-            if let Some(boxed_dyn_error) = io_error.into_inner() {
-                if let Ok(error) = boxed_dyn_error.downcast::<ArkScaleError>() {
-                    return error.0;
-                }
-            }
-            err_msg
-        },
-    }
-}
-
-
-/// Scale `Input` wrapped as Arkworks' `Read`
-struct InputAsRead<'a,I: Input>(&'a mut I);
-
-impl<'a,I: Input> Read for InputAsRead<'a,I> {
-    fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
-        panic!("At present Scale uses only read_exact, but if this changes then we should handle lengths correctly.");
-        // assert_eq!(self.0.remaining_len(), Ok(Some(buf.len())));
-        // println!("{:?}",self.0.remaining_len());
-        // Avoid reading too much if the limit exists?!?
-        /*
-        let l = self.0.remaining_len()
-        .map_err(scale_error_to_ark_error) ?
-        .unwrap_or(buf.len());
-        let l = core::cmp::min(l,buf.len());
-        self.0.read(&mut buf[0..l]).map_err(scale_error_to_ark_error) ?;
-        Ok(l)
-        */
-    }
-
-    fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
-        // scale's Input::read acts like Read::read_exact
-        self.0.read(buf).map_err(scale_error_to_ark_error) ?;
-        Ok(())
-    }
-}
-
-
-/// Scale `Output` wrapped as Arkworks' `Write`
-struct OutputAsWrite<'a,O: Output+?Sized>(&'a mut O);
-
-impl<'a,I: Output+?Sized> Write for OutputAsWrite<'a,I> {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize>{
-        // Scale `Output`s always succeed
-        self.0.write(buf);
-        // Scale `Output`s always succeed fully
-        Ok(buf.len())
-    }
-
-    fn flush(&mut self) -> ArkResult<()> {
-        // Scale `Output`s always succeed immediately
-        Ok(())
-    }    
-}
 
 
 /// Arkworks type wrapped for serialization by Scale
@@ -286,5 +182,3 @@ where T: CanonicalSerialize, B: Borrow<T>, I: IntoIterator<Item=B>,
 }
 
 
-// #[cfg(projective)]
-pub mod projective;

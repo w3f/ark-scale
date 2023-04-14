@@ -21,8 +21,8 @@ use parity_scale_codec::{self as scale, Decode,Encode,Input,Output};
 pub mod rw;
 use rw::*;
 
-#[cfg(feature = "projective")]
-pub mod projective;
+#[cfg(feature = "hazmat")]
+pub mod hazmat;
 
 #[cfg(test)]
 mod tests;

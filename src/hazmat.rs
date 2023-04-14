@@ -1,9 +1,14 @@
-//! # Arkworks project serialization and deserialization
+//! # Hazardous projective serialization and deserialization
 //!
 //! Do NOT use this module in wire formats or other untrusted cases.
 //! 
 //! Aside from not being cannonical, we caution that projective coordinates
-//! actually [leak secret key material](https://eprint.iacr.org/2003/191).
+//! actually [leak secret key material](https://eprint.iacr.org/2003/191),
+//! which makes them extraordinarily dangerous.
+//!
+//! We do not implement curve or subgroup check for elliptic curve points
+//! in projective coordinates, nor do we validate their base field elements.
+//! You diserve to be p0wned if you use them in an untrusted enviroment.
 
 use super::*;
 pub use ark_ec::models::{short_weierstrass as sw, twisted_edwards as te};

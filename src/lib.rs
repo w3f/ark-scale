@@ -21,7 +21,7 @@ use parity_scale_codec::{self as scale, Decode,Encode,Input,Output};
 pub mod rw;
 use rw::*;
 
-// #[cfg(feature = "projective")]
+#[cfg(feature = "projective")]
 pub mod projective;
 
 #[cfg(test)]

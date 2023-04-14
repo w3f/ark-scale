@@ -50,10 +50,10 @@ where T: CanonicalSerialize+CanonicalDeserialize+UniformRand+Clone+PartialEq+Deb
     assert_eq!(array,v.0);
     let w0 = <Vec<T> as CanonicalDeserialize>::deserialize_with_mode(&mut u.as_slice(), crate::is_compressed(U), crate::is_validated(U)).unwrap();
     assert_eq!(array.as_slice(), w0.as_slice());
-    let w1 = <Vec<T> as CanonicalDeserialize>::deserialize_with_mode(super::InputAsRead(&mut u.as_slice()), crate::is_compressed(U), crate::is_validated(U)).unwrap();
-    assert_eq!(array.as_slice(), w1.as_slice());
-    // let w: ArkScale<Vec<T>> = <ArkScale<Vec<T>> as Decode>::decode(&mut u.as_slice()).unwrap();
-    // assert_eq!(array.as_slice(), w.0.as_slice());
+    // let w1 = <Vec<T> as CanonicalDeserialize>::deserialize_with_mode(super::InputAsRead(&mut u.as_slice()), crate::is_compressed(U), crate::is_validated(U)).unwrap();
+    // assert_eq!(array.as_slice(), w1.as_slice());
+    let w: ArkScale<Vec<T>,U> = ArkScale::decode(&mut u.as_slice()).unwrap();
+    assert_eq!(array.as_slice(), w.0.as_slice());
 }
 fn run_tests<T>()
 where T: CanonicalSerialize+CanonicalDeserialize+UniformRand+Clone+PartialEq+Debug+Default

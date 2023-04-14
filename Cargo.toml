@@ -13,6 +13,8 @@ parity-scale-codec = { version = "3.4", default-features = false }
 ark-std = { version = "0.4", default-features = false }
 ark-serialize = { version = "0.4", default-features = false, features = [ "derive" ] }
 
+ark-ec = { version = "0.4", default-features = false, optional = true }
+
 # ark-serialize-derive = { version = "0.4", default-features = false }
 # arrayvec = { version = "0.7.2", default-features = false }
 # arrayref = { version = "0.3", default-features = false }
@@ -25,6 +27,7 @@ rand_core = { version = "0.6", features = [ "getrandom" ] }
 
 
 [features]
-default = ["std"]
+default = ["std", "projective"]
 std = ["ark-std/std"]
+projective = ["dep:ark-ec"]
 

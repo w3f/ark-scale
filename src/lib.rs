@@ -182,8 +182,7 @@ impl<T, const U: Usage> From<T> for ArkScale<T,U> {
 //     fn from(t: &'a T) -> ArkScale<T,U> { ArkScale(t.clone()) }
 // }
 
-impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T,U> {
-    // Required method
+impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T,U>  {
     fn decode<I: Input>(input: &mut I) -> Result<Self,scale::Error> {
         <T as CanonicalDeserialize>::deserialize_with_mode(InputAsRead(input), is_compressed(U), is_validated(U))
         .map(|v| ArkScale(v)).map_err(ark_error_to_scale_error)
@@ -194,14 +193,15 @@ impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T,U> {
     // fn encoded_fixed_size() -> Option<usize> { ... }
 }
 
+const OOPS: &'static str = "Arkworks serialization failed, but Scale cannot handle serialization failures.";
+
 impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T,U> {
     fn size_hint(&self) -> usize {
         self.0.serialized_size(is_compressed(U))
     }
 
     fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
-        self.0.serialize_with_mode(OutputAsWrite(dest), is_compressed(U))
-        .expect("Arkworks serialization failed, but Scale cannot handle serialization failures.")
+        self.0.serialize_with_mode(OutputAsWrite(dest), is_compressed(U)).expect(OOPS);
     }
 
     // TODO:  Arkworks wants an io::Write, so we ignre the rule that
@@ -212,6 +212,7 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T,U> {
         self.0.serialized_size(is_compressed(U))
     }
 }
+
 
 pub struct ArkScaleRef<'a,T, const U: Usage = WIRE>(pub &'a T);
 
@@ -225,8 +226,7 @@ impl<'a,T: CanonicalSerialize, const U: Usage> Encode for ArkScaleRef<'a,T,U> {
     }
 
     fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
-        self.0.serialize_with_mode(OutputAsWrite(dest), is_compressed(U))
-        .expect("Arkworks serialization failed, but Scale cannot handle serialization failures.")
+        self.0.serialize_with_mode(OutputAsWrite(dest), is_compressed(U)).expect(OOPS);
     }
 
     // TODO:  Arkworks wants an io::Write, so we ignre the rule that
@@ -285,3 +285,6 @@ where T: CanonicalSerialize, B: Borrow<T>, I: IntoIterator<Item=B>,
     iter_ark_to_ark_bytes(iter,usage).map_err(ark_error_to_scale_error)
 }
 
+
+// #[cfg(projective)]
+pub mod projective;

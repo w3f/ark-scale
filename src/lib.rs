@@ -10,7 +10,7 @@
 #![doc = include_str!("../README.md")]
 
 
-use ark_std::{io::{self, Read, Write}, fmt, borrow::Borrow};
+use ark_std::{io::{self, Read, Write}, fmt, borrow::Borrow, vec::Vec};
 type ArkResult<T> = Result<T,io::Error>;
 use ark_serialize::{self,Compress,Validate,CanonicalSerialize,CanonicalDeserialize,SerializationError};
 

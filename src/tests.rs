@@ -1,6 +1,6 @@
 
 
-use ark_std::{cmp::PartialEq, fmt::Debug, UniformRand};  // io::{self, Read, Write}
+use ark_std::{cmp::PartialEq, fmt::Debug, UniformRand, vec::Vec};  // io::{self, Read, Write}
 
 use ark_serialize::{CanonicalSerialize,CanonicalDeserialize};
 

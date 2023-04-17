@@ -1,4 +1,5 @@
 use super::*;
+use ark_std::format;
 
 
 /// Scale `Input` error wrapped for passage through Arkworks' `CanonicalDeserialize`

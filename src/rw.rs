@@ -1,9 +1,8 @@
 use super::*;
 use ark_std::format;
 
-
 /// Scale `Input` error wrapped for passage through Arkworks' `CanonicalDeserialize`
-#[derive(Clone,Debug)]
+#[derive(Clone, Debug)]
 #[repr(transparent)]
 pub struct ArkScaleError(pub scale::Error);
 
@@ -14,7 +13,7 @@ impl fmt::Display for ArkScaleError {
     }
 }
 
-impl ark_std::error::Error for ArkScaleError {}  // No source to return
+impl ark_std::error::Error for ArkScaleError {} // No source to return
 
 pub fn scale_error_to_ark_error(error: scale::Error) -> io::Error {
     io::Error::new(io::ErrorKind::UnexpectedEof, ArkScaleError(error))
@@ -29,7 +28,7 @@ pub fn ark_error_to_scale_error(error: SerializationError) -> scale::Error {
         UnexpectedFlags => "Arkworks deserialization failed: UnexpectedFlags".into(),
         IoError(io_error) => {
             let err_msg: scale::Error = "Arkworks deserialization io error".into();
-            let err_msg = err_msg.chain(format!("{}",&io_error));
+            let err_msg = err_msg.chain(format!("{}", &io_error));
             // ark_std::Error lacks downcasting https://github.com/arkworks-rs/std/issues/44
             #[cfg(feature = "std")]
             if let Some(boxed_dyn_error) = io_error.into_inner() {
@@ -38,15 +37,14 @@ pub fn ark_error_to_scale_error(error: SerializationError) -> scale::Error {
                 }
             }
             err_msg
-        },
+        }
     }
 }
 
-
 /// Scale `Input` wrapped as Arkworks' `Read`
-pub struct InputAsRead<'a,I: Input>(pub &'a mut I);
+pub struct InputAsRead<'a, I: Input>(pub &'a mut I);
 
-impl<'a,I: Input> Read for InputAsRead<'a,I> {
+impl<'a, I: Input> Read for InputAsRead<'a, I> {
     fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
         panic!("At present Scale uses only read_exact, but if this changes then we should handle lengths correctly.");
         // assert_eq!(self.0.remaining_len(), Ok(Some(buf.len())));
@@ -64,17 +62,16 @@ impl<'a,I: Input> Read for InputAsRead<'a,I> {
 
     fn read_exact(&mut self, buf: &mut [u8]) -> io::Result<()> {
         // scale's Input::read acts like Read::read_exact
-        self.0.read(buf).map_err(scale_error_to_ark_error) ?;
+        self.0.read(buf).map_err(scale_error_to_ark_error)?;
         Ok(())
     }
 }
 
-
 /// Scale `Output` wrapped as Arkworks' `Write`
-pub struct OutputAsWrite<'a,O: Output+?Sized>(pub &'a mut O);
+pub struct OutputAsWrite<'a, O: Output + ?Sized>(pub &'a mut O);
 
-impl<'a,I: Output+?Sized> Write for OutputAsWrite<'a,I> {
-    fn write(&mut self, buf: &[u8]) -> io::Result<usize>{
+impl<'a, I: Output + ?Sized> Write for OutputAsWrite<'a, I> {
+    fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         // Scale `Output`s always succeed
         self.0.write(buf);
         // Scale `Output`s always succeed fully
@@ -86,4 +83,3 @@ impl<'a,I: Output+?Sized> Write for OutputAsWrite<'a,I> {
         Ok(())
     }
 }
-

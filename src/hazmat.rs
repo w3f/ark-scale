@@ -15,7 +15,7 @@ pub use ark_ec::models::{short_weierstrass as sw, twisted_edwards as te};
 
 pub struct ArkScaleProjective<T>(pub T);
 
-impl<T, const U: Usage> From<T> for ArkScaleProjective<T> {
+impl<T> From<T> for ArkScaleProjective<T> {
     fn from(t: T) -> ArkScaleProjective<T> {
         ArkScaleProjective(t)
     }

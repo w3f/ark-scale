@@ -11,9 +11,9 @@ license = "MIT/Apache-2.0"
 [dependencies]
 parity-scale-codec = { version = "3.4", default-features = false }
 ark-std = { version = "0.4", default-features = false }
-ark-serialize = { version = "0.4", default-features = false, features = [ "derive" ] }
+ark-serialize = { version = "0.4.2", default-features = false, features = [ "derive" ] }
 
-ark-ec = { version = "0.4", default-features = false, optional = true }
+ark-ec = { version = "0.4.2", default-features = false, optional = true }
 
 # ark-serialize-derive = { version = "0.4", default-features = false }
 # arrayvec = { version = "0.7.2", default-features = false }

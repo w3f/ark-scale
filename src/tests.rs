@@ -2,7 +2,7 @@ use ark_std::{cmp::PartialEq, fmt::Debug, vec::Vec, UniformRand}; // io::{self, 
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
-use parity_scale_codec::{self as scale, Decode, Encode};
+use parity_scale_codec::{Decode, Encode};
 
 use crate::*;
 

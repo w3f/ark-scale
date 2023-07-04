@@ -84,6 +84,7 @@ pub const WIRE: Usage = make_usage(Compress::Yes, Validate::Yes);
 pub const HOST_CALL: Usage = make_usage(Compress::No, Validate::No);
 
 /// Arkworks type wrapped for serialization by Scale
+#[derive(Clone,Debug,Eq,PartialEq)]
 pub struct ArkScale<T, const U: Usage = WIRE>(pub T);
 
 impl<T, const U: Usage> From<T> for ArkScale<T, U> {
@@ -135,7 +136,14 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
     }
 }
 
+#[derive(Copy,Debug)]
 pub struct ArkScaleRef<'a, T, const U: Usage = WIRE>(pub &'a T);
+
+impl<'a, T, const U: Usage> Clone for ArkScaleRef<'a, T, U> {
+    fn clone(&self) -> Self {
+        ArkScaleRef(self.0)
+    }
+}
 
 impl<'a, T, const U: Usage> From<&'a T> for ArkScaleRef<'a, T, U> {
     fn from(t: &'a T) -> ArkScaleRef<'a, T, U> {

@@ -9,7 +9,7 @@ license = "MIT/Apache-2.0"
 
 
 [dependencies]
-parity-scale-codec = { version = "3.4", default-features = false }
+parity-scale-codec = { version = "3.4", default-features = false, features = ["derive","max-encoded-len"] }
 ark-std = { version = "0.4", default-features = false }
 ark-serialize = { version = "0.4.2", default-features = false, features = [ "derive" ] }
 

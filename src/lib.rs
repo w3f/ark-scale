@@ -20,7 +20,7 @@ use ark_serialize::{
     self, CanonicalDeserialize, CanonicalSerialize, Compress, SerializationError, Validate,
 };
 
-use parity_scale_codec::{self as scale, Decode, Encode, Input, Output};
+use parity_scale_codec::{self as scale, Decode, Encode, EncodeLike, Input, Output, MaxEncodedLen};
 // type ScaleResult<T> = Result<T,scale::Error>;
 
 pub mod rw;
@@ -84,7 +84,7 @@ pub const WIRE: Usage = make_usage(Compress::Yes, Validate::Yes);
 pub const HOST_CALL: Usage = make_usage(Compress::No, Validate::No);
 
 /// Arkworks type wrapped for serialization by Scale
-#[derive(Clone,Debug,Eq,PartialEq)]
+#[derive(Clone, Eq, PartialEq, Debug)]
 pub struct ArkScale<T, const U: Usage = WIRE>(pub T);
 
 impl<T, const U: Usage> From<T> for ArkScale<T, U> {
@@ -116,6 +116,8 @@ impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T, U> {
 const OOPS: &'static str =
     "Arkworks serialization failed, but Scale cannot handle serialization failures.";
 
+impl<T: CanonicalSerialize, const U: Usage> EncodeLike for ArkScale<T, U> {}
+
 impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
     fn size_hint(&self) -> usize {
         self.0.serialized_size(is_compressed(U))
@@ -133,6 +135,13 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
 
     fn encoded_size(&self) -> usize {
         self.0.serialized_size(is_compressed(U))
+    }
+}
+
+#[derive(Copy,Debug)]
+impl<T: CanonicalSerialize, const U: Usage> MaxEncodedLen for ArkScale<T, U> {
+    fn max_encoded_len() -> usize {
+        65536
     }
 }
 
@@ -159,7 +168,7 @@ impl<'a, T: CanonicalSerialize, const U: Usage> Encode for ArkScaleRef<'a, T, U>
     fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
         self.0
             .serialize_with_mode(OutputAsWrite(dest), is_compressed(U))
-            .expect(OOPS);
+            .expect(OOPS); // <<< Not acceptable. Under what conditions can this fail?
     }
 
     // TODO:  Arkworks wants an io::Write, so we ignre the rule that

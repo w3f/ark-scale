@@ -14,8 +14,10 @@ wrapping and unwrapping errors appropriately.
 
 `ArkScale` cannot easily implement `MaxEncodedLen` or `ConstEncodedLen`
 from SCALE, due to the orphan rules.  You'll need these if using weights
-in Frame, so you should create wrapper types around `ArkScale` in practice.
-You often want these for crate documentation, readable errors, etc anyways.
+in Frame, so you should usually create wrapper types around `ArkScale`.
+As a rule, anytime you choose curves then you'll have a conditionanl
+ark-substrate dependence anyways, so wrapper types should not become
+too onerous, and they likely improve documentation, errors, etc anyways.
 
 `ArkScale` panics if serialization fails because SCALE does not propogate
 serialization failures.  `ArkScale` users should therefore be responcible

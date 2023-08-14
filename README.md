@@ -12,3 +12,15 @@ analogous to `std::io::{Read,Write}` respectively, as well as traits
 We simply translate between these extremely similar traits, including
 wrapping and unwrapping errors appropriately.
 
+`ArkScale` cannot easily implement `MaxEncodedLen` or `ConstEncodedLen`
+from SCALE, due to the orphan rules.  You'll need these if using weights
+in Frame, so you should create wrapper types around `ArkScale` in practice.
+You often want these for crate documentation, readable errors, etc anyways.
+
+`ArkScale` panics if serialization fails because SCALE does not propogate
+serialization failures.  `ArkScale` users should therefore be responcible
+for ensuring `T: CanonicalSerialize` cannot fail for mathematical reasons,
+at least when using `ArkScale` in Polkadot.  In principle, any serialization
+code could fail from memory exaustion, but Frame avoids this, provided
+you've set `MaxEncodedLen` correctly on your wrapper types.
+

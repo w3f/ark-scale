@@ -20,7 +20,8 @@ use ark_serialize::{
     self, CanonicalDeserialize, CanonicalSerialize, Compress, SerializationError, Validate,
 };
 
-use parity_scale_codec::{self as scale, Decode, Encode, EncodeLike, Input, Output, MaxEncodedLen};
+pub use parity_scale_codec::{self as scale, MaxEncodedLen, ConstEncodedLen};
+use scale::{Decode, Encode, EncodeLike, Input, Output};
 // type ScaleResult<T> = Result<T,scale::Error>;
 
 pub mod rw;
@@ -114,7 +115,7 @@ impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T, U> {
 }
 
 const OOPS: &'static str =
-    "Arkworks serialization failed, but Scale cannot handle serialization failures.";
+    "Arkworks serialization failed, but Scale cannot handle serialization failures.  This violates usage conditions from ark-scale/README.md.";
 
 impl<T: CanonicalSerialize, const U: Usage> EncodeLike for ArkScale<T, U> {}
 
@@ -167,7 +168,7 @@ impl<'a, T: CanonicalSerialize, const U: Usage> Encode for ArkScaleRef<'a, T, U>
     fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
         self.0
             .serialize_with_mode(OutputAsWrite(dest), is_compressed(U))
-            .expect(OOPS); // <<< Not acceptable. Under what conditions can this fail?
+            .expect(OOPS);
     }
 
     // TODO:  Arkworks wants an io::Write, so we ignre the rule that

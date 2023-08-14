@@ -138,7 +138,6 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
     }
 }
 
-#[derive(Copy,Debug)]
 impl<T: CanonicalSerialize, const U: Usage> MaxEncodedLen for ArkScale<T, U> {
     fn max_encoded_len() -> usize {
         65536

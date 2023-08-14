@@ -20,12 +20,15 @@ use ark_serialize::{
     self, CanonicalDeserialize, CanonicalSerialize, Compress, SerializationError, Validate,
 };
 
-pub use parity_scale_codec::{self as scale, MaxEncodedLen, ConstEncodedLen};
+pub use parity_scale_codec::{self as scale, MaxEncodedLen}; // max_encoded_len::ConstEncodedLen
 use scale::{Decode, Encode, EncodeLike, Input, Output};
 // type ScaleResult<T> = Result<T,scale::Error>;
 
 pub mod rw;
 use rw::*;
+
+mod max_encoded_len;
+pub use max_encoded_len::*;
 
 #[cfg(feature = "hazmat")]
 pub mod hazmat;
@@ -136,12 +139,6 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
 
     fn encoded_size(&self) -> usize {
         self.0.serialized_size(is_compressed(U))
-    }
-}
-
-impl<T: CanonicalSerialize, const U: Usage> MaxEncodedLen for ArkScale<T, U> {
-    fn max_encoded_len() -> usize {
-        65536
     }
 }
 

@@ -118,7 +118,12 @@ impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T, U> {
 }
 
 const OOPS: &'static str =
-    "Arkworks serialization failed, but Scale cannot handle serialization failures.  This violates usage conditions from ark-scale/README.md.";
+    "Arkworks serialization failed, but Scale cannot handle serialization failures.  As ark_scale::rw::OutputAsWrite cannot fail, and ark_serialize_derive cannot introduce fresh falures, you have a non-derived `impl<..> ark_serialize::CanonicalSerialize` which fails, which violates usage conditions from ark-scale/README.md..";
+    // You could usually verify this condition by reading results like
+    // git clone https://github.com/arkworks-rs/algebra
+    // cd algebra
+    // grep -r --include '*.rs' 'CanonicalSerialize for' -A 10 ff* ec* poly/ | less
+
 
 impl<T: CanonicalSerialize, const U: Usage> EncodeLike for ArkScale<T, U> {}
 

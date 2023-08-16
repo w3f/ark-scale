@@ -20,9 +20,15 @@ ark-substrate dependence anyways, so wrapper types should not become
 too onerous, and they likely improve documentation, errors, etc anyways.
 
 `ArkScale` panics if serialization fails because SCALE does not propogate
-serialization failures.  `ArkScale` users should therefore be responcible
-for ensuring `T: CanonicalSerialize` cannot fail for mathematical reasons,
-at least when using `ArkScale` in Polkadot.  In principle, any serialization
-code could fail from memory exaustion, but Frame avoids this, provided
-you've set `MaxEncodedLen` correctly on your wrapper types.
+serialization failures.  As scale outputs cannot fail, and ark-scale-derive
+does not introduce failures, we therefore cannot trigger this panic except
+by some explicit `impl CanonicalSerialize for T` intrpducing a failure.
+`ArkScale` users should therefore be responcible for reviewing non-derived
+`CanonicalSerialize` in their dependencies.  In particular, there are no
+fresh failures in arkworks/algebra:
+```
+git clone https://github.com/arkworks-rs/algebra
+cd algebra
+grep -r --include '*.rs' 'CanonicalSerialize for' -A 10 ff* ec* poly/ | less
+```
 

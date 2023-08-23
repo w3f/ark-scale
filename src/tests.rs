@@ -4,8 +4,7 @@ use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
 use parity_scale_codec::{Decode, Encode};
 
-#[macro_use]
-use crate::*;
+use crate::{self as ark_scale, *};
 
 
 fn run_test<T, const U: Usage>()

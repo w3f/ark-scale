@@ -244,6 +244,7 @@ where
 
 
 /// Implement `scale::{Encode,Decode}` by delegation to `ArkScale`
+#[macro_export]
 macro_rules! impl_scale_via_ark {
     ($t:ty) => {
 

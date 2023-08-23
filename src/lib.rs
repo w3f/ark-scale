@@ -272,23 +272,28 @@ impl Decode for $t {
 
 impl Encode for $t {
     fn size_hint(&self) -> usize {
-        ark_scale::ArkScaleRef(self).size_hint()
+        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        a.size_hint()
     }
 
     fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
-        ark_scale::ArkScaleRef(self).encode_to(dest)
+        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        a.encode_to(dest)
     }
 
 	fn encode(&self) -> Vec<u8> {
-        ark_scale::ArkScaleRef(self).encode()
+        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        a.encode()
 	}
 
     fn using_encoded<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
-        ark_scale::ArkScaleRef(self).using_encoded(f)
+        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        a.using_encoded(f)
     }
 
     fn encoded_size(&self) -> usize {
-        ark_scale::ArkScaleRef(self).encoded_size()
+        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        a.encoded_size()
     }
 }
 

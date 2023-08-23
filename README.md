@@ -26,7 +26,7 @@ by some explicit `impl CanonicalSerialize for T` intrpducing a failure.
 `ArkScale` users should therefore be responcible for reviewing non-derived
 `CanonicalSerialize` in their dependencies.  In particular, there are no
 fresh failures in arkworks/algebra:
-```
+```bash
 git clone https://github.com/arkworks-rs/algebra
 cd algebra
 grep -r --include '*.rs' 'CanonicalSerialize for' -A 10 ff* ec* poly/ | less

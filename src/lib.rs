@@ -269,49 +269,49 @@ macro_rules! impl_scale_via_ark {
 
 impl Decode for $t {
     fn decode<I: Input>(input: &mut I) -> Result<Self, ark_scale::scale::Error> {
-        let a: ark_scale::ArkScale<$t> = <ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::decode(input) ?;
+        let a: ark_scale::ArkScale<Self> = <ark_scale::ArkScale<Self> as ark_scale::scale::Decode>::decode(input) ?;
         Ok(a.0)
     }
 
     /*
 	fn decode_into<I: ark_scale::scale::Input>(input: &mut I, dst: &mut core::mem::MaybeUninit<Self>) -> Result<ark_scale::scale::DecodeFinished, ark_scale::scale::Error> {
         // safe thanks to #[repr(transparent)]
-        <ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::decode_into(input,dst)
+        <ark_scale::ArkScale<Self> as ark_scale::scale::Decode>::decode_into(input,dst)
     }
     */
 
 	fn skip<I: Input>(input: &mut I) -> Result<(), ark_scale::scale::Error> {
-        <ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::skip(input)
+        <ark_scale::ArkScale<Self> as ark_scale::scale::Decode>::skip(input)
 	}
 
 	fn encoded_fixed_size() -> Option<usize> {
-		<ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::encoded_fixed_size()
+		<ark_scale::ArkScale<Self> as ark_scale::scale::Decode>::encoded_fixed_size()
 	}
 }
 
 impl Encode for $t {
     fn size_hint(&self) -> usize {
-        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        let a: ark_scale::ArkScaleRef<Self> = ark_scale::ArkScaleRef(self);
         a.size_hint()
     }
 
     fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
-        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        let a: ark_scale::ArkScaleRef<Self> = ark_scale::ArkScaleRef(self);
         a.encode_to(dest)
     }
 
 	fn encode(&self) -> Vec<u8> {
-        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        let a: ark_scale::ArkScaleRef<Self> = ark_scale::ArkScaleRef(self);
         a.encode()
 	}
 
     fn using_encoded<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
-        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        let a: ark_scale::ArkScaleRef<Self> = ark_scale::ArkScaleRef(self);
         a.using_encoded(f)
     }
 
     fn encoded_size(&self) -> usize {
-        let a: ark_scale::ArkScaleRef<$t> = ark_scale::ArkScaleRef(self);
+        let a: ark_scale::ArkScaleRef<Self> = ark_scale::ArkScaleRef(self);
         a.encoded_size()
     }
 }

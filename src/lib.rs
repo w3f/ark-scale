@@ -243,7 +243,20 @@ where
 }
 
 
-/// Implement `scale::{Encode,Decode}` by delegation to `ArkScale`
+/// Implement `scale::{Encode,Decode}` by delegation to `ArkScale`,
+/// but lacks support for polymorphic code.
+/// 
+/// You should manually provide `MaxEncodedLen` for weights.
+/// ```ignore
+/// impl_scale_via_ark!(MyArkworksType);
+/// 
+/// impl ark_scale::MaxEncodedLen for MyArkworksType 
+/// {
+///     fn max_encoded_len() -> usize {
+///         256
+///     }
+/// }
+/// ```
 #[macro_export]
 macro_rules! impl_scale_via_ark {
     ($t:ty) => {

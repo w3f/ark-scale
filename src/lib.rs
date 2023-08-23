@@ -250,7 +250,7 @@ macro_rules! impl_scale_via_ark {
 
 impl Decode for $t {
     fn decode<I: Input>(input: &mut I) -> Result<Self, ark_scale::scale::Error> {
-        let a: ark_scale::ArkScale<$t> = ark_scale::<ArkScale<$t> as ark_scale::scale::Decode>::decode(input) ?;
+        let a: ark_scale::ArkScale<$t> = <ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::decode(input) ?;
         Ok(a.0)
     }
 

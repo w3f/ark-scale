@@ -250,6 +250,13 @@ where
     iter_ark_to_ark_bytes(iter, usage).map_err(ark_error_to_scale_error)
 }
 
+
+// We next provide helper macros for implementing scale upon
+// your own arkworks types.
+
+
+/// Implement body of `scale::Decode` by delegation to `ArkScale`,
+/// usable from polymorphic code.
 #[macro_export]
 macro_rules! impl_decode_via_ark {
     () => {
@@ -275,6 +282,8 @@ macro_rules! impl_decode_via_ark {
     }
 }
 
+/// Implement body of `scale::Encode` by delegation to `ArkScale`,
+/// usable from polymorphic code.
 #[macro_export]
 macro_rules! impl_encode_via_ark {
     () => {
@@ -336,7 +345,9 @@ impl ark_scale::scale::EncodeLike for $t {}
     }
 } // macro_rules! impl_scale_via_ark
 
-
+/// Implement body of `scale::MaxEncodedLen` by delegation
+/// to `ark_std::Zero` and `CanonicalSerialize`, usable
+/// from polymorphic code.
 #[macro_export]
 macro_rules! impl_body_max_encode_len {
     () => {

@@ -88,7 +88,8 @@ pub const WIRE: Usage = make_usage(Compress::Yes, Validate::Yes);
 pub const HOST_CALL: Usage = make_usage(Compress::No, Validate::No);
 
 /// Arkworks type wrapped for serialization by Scale
-#[derive(Clone, Eq, PartialEq, Debug)]
+#[derive(Clone, Eq, PartialEq, Debug)] // CanonicalSerialize, CanonicalDeserialize
+#[repr(transparent)]
 pub struct ArkScale<T, const U: Usage = WIRE>(pub T);
 
 impl<T, const U: Usage> From<T> for ArkScale<T, U> {
@@ -147,7 +148,8 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
     }
 }
 
-#[derive(Copy,Debug)]
+
+#[derive(Copy,Debug)] // CanonicalSerialize
 pub struct ArkScaleRef<'a, T, const U: Usage = WIRE>(pub &'a T);
 
 impl<'a, T, const U: Usage> Clone for ArkScaleRef<'a, T, U> {
@@ -181,6 +183,7 @@ impl<'a, T: CanonicalSerialize, const U: Usage> Encode for ArkScaleRef<'a, T, U>
         self.0.serialized_size(is_compressed(U))
     }
 }
+
 
 /// Arkworks' `CanonicalSerialize` cannot consume `Iterator`s directly,
 /// but `iter_ark_to_ark_bytes` serializes exactly like `Vec<T>`,
@@ -238,3 +241,58 @@ where
 {
     iter_ark_to_ark_bytes(iter, usage).map_err(ark_error_to_scale_error)
 }
+
+
+/// Implement `scale::{Encode,Decode}` by delegation to `ArkScale`
+macro_rules! impl_scale_via_ark {
+    ($t:ty) => {
+
+impl Decode for $t {
+    fn decode<I: Input>(input: &mut I) -> Result<Self, ark_scale::scale::Error> {
+        let a: ark_scale::ArkScale<$t> = ark_scale::<ArkScale<$t> as ark_scale::scale::Decode>::decode(input) ?;
+        Ok(a.0)
+    }
+
+    /*
+	fn decode_into<I: ark_scale::scale::Input>(input: &mut I, dst: &mut core::mem::MaybeUninit<Self>) -> Result<ark_scale::scale::DecodeFinished, ark_scale::scale::Error> {
+        // safe thanks to #[repr(transparent)]
+        <ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::decode_into(input,dst)
+    }
+    */
+
+	fn skip<I: Input>(input: &mut I) -> Result<(), ark_scale::scale::Error> {
+        <ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::skip(input)
+	}
+
+	fn encoded_fixed_size() -> Option<usize> {
+		<ark_scale::ArkScale<$t> as ark_scale::scale::Decode>::encoded_fixed_size()
+	}
+}
+
+impl Encode for $t {
+    fn size_hint(&self) -> usize {
+        ark_scale::ArkScaleRef(self).size_hint()
+    }
+
+    fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
+        ark_scale::ArkScaleRef(self).encode_to(dest)
+    }
+
+	fn encode(&self) -> Vec<u8> {
+        ark_scale::ArkScaleRef(self).encode()
+	}
+
+    fn using_encoded<R, F: FnOnce(&[u8]) -> R>(&self, f: F) -> R {
+        ark_scale::ArkScaleRef(self).using_encoded(f)
+    }
+
+    fn encoded_size(&self) -> usize {
+        ark_scale::ArkScaleRef(self).encoded_size()
+    }
+}
+
+impl ark_scale::scale::EncodeLike for $t {}
+
+    }
+} // macro_rules! impl_scale_via_ark
+

@@ -4,7 +4,9 @@ use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
 use parity_scale_codec::{Decode, Encode};
 
+#[macro_use]
 use crate::*;
+
 
 fn run_test<T, const U: Usage>()
 where
@@ -74,6 +76,8 @@ where
     let w: ArkScale<Vec<T>, U> = ArkScale::decode(&mut u.as_slice()).unwrap();
     assert_eq!(array.as_slice(), w.0.as_slice());
 }
+
+
 fn run_tests<T>()
 where
     T: CanonicalSerialize
@@ -100,4 +104,19 @@ fn fields() {
 fn curves() {
     run_tests::<ark_bls12_381::G1Affine>();
     run_tests::<ark_ed25519::EdwardsAffine>();
+}
+
+#[derive(Clone, Eq, PartialEq, Debug, CanonicalSerialize, CanonicalDeserialize)]
+struct MacroTest(ark_bls12_381::Fr);
+
+impl_scale_via_ark!(MacroTest);
+
+#[test]
+fn macros() {
+    let f = || MacroTest(ark_std::UniformRand::rand(&mut rand_core::OsRng));
+    // let a: [MacroTest; 4] = [f(), f(), f(), f()];
+    let a: MacroTest = f();
+    let v = a.encode();
+    // let b: [MacroTest; 4] = <[MacroTest; 4] as Decode>::decode(&v).unwrap();
+    // assert_eq!(a,b);
 }

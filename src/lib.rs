@@ -15,10 +15,12 @@ use ark_std::{
     io::{self, Read, Write},
     vec::Vec,
 };
+
 type ArkResult<T> = Result<T, io::Error>;
 use ark_serialize::{
-    self, CanonicalDeserialize, CanonicalSerialize, Compress, SerializationError, Validate,
+    CanonicalDeserialize, CanonicalSerialize, Compress, SerializationError, Validate,
 };
+pub use ark_serialize::{self as ark_serialize};
 
 pub use parity_scale_codec::{self as scale, MaxEncodedLen}; // max_encoded_len::ConstEncodedLen
 use scale::{Decode, Encode, EncodeLike, Input, Output};
@@ -334,3 +336,14 @@ impl ark_scale::scale::EncodeLike for $t {}
     }
 } // macro_rules! impl_scale_via_ark
 
+
+#[macro_export]
+macro_rules! impl_body_max_encode_len {
+    () => {
+        #[inline]
+        fn max_encoded_len() -> usize {
+            use ark_serialize::{CanonicalSerialize}; 
+            <Self as ark_std::Zero>::zero().compressed_size()
+        }
+    }
+}

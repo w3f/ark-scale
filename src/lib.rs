@@ -33,6 +33,12 @@ pub use max_encoded_len::*;
 #[cfg(feature = "hazmat")]
 pub mod hazmat;
 
+#[cfg(feature = "ff")]
+pub mod ff;
+
+#[cfg(feature = "ec")]
+pub mod ec;
+
 #[cfg(test)]
 mod tests;
 

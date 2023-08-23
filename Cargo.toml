@@ -13,6 +13,7 @@ parity-scale-codec = { version = "3.6", default-features = false, features = ["m
 ark-std = { version = "0.4", default-features = false }
 ark-serialize = { version = "0.4.2", default-features = false, features = [ "derive" ] }
 
+ark-ff = { version = "0.4.2", default-features = false, optional = true }
 ark-ec = { version = "0.4.2", default-features = false, optional = true }
 
 # ark-serialize-derive = { version = "0.4", default-features = false }
@@ -36,5 +37,7 @@ std = [
     "ark-ed25519/std",
     "rand_core/std"
 ]
-hazmat = ["dep:ark-ec"]
+ff = ["dep:ark-ff"]
+ec = ["ff", "dep:ark-ec"]
+hazmat = ["ec"]
 

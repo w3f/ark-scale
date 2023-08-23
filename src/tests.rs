@@ -116,7 +116,7 @@ fn macros() {
     let f = || MacroTest(ark_std::UniformRand::rand(&mut rand_core::OsRng));
     // let a: [MacroTest; 4] = [f(), f(), f(), f()];
     let a: MacroTest = f();
-    let v = a.encode();
+    let v = Encode::encode(&a);
     // let b: [MacroTest; 4] = <[MacroTest; 4] as Decode>::decode(&v).unwrap();
     // assert_eq!(a,b);
 }

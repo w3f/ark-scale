@@ -351,10 +351,13 @@ impl ark_scale::scale::EncodeLike for $t {}
 #[macro_export]
 macro_rules! impl_body_max_encode_len {
     () => {
+        crate::impl_body_max_encode_len!(Self);
+    };
+    ($t:ty) => {
         #[inline]
         fn max_encoded_len() -> usize {
             use ark_serialize::{CanonicalSerialize}; 
-            <Self as ark_std::Zero>::zero().compressed_size()
+            <$t as ark_std::Zero>::zero().compressed_size()
         }
-    }
+    };
 }

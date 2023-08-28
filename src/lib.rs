@@ -260,7 +260,7 @@ where
 #[macro_export]
 macro_rules! impl_decode_via_ark {
     () => {
-        fn decode<I: Input>(input: &mut I) -> Result<Self, ark_scale::scale::Error> {
+        fn decode<I: ark_scale::scale::Input>(input: &mut I) -> Result<Self, ark_scale::scale::Error> {
             let a: ark_scale::ArkScale<Self> = <ark_scale::ArkScale<Self> as ark_scale::scale::Decode>::decode(input) ?;
             Ok(a.0)
         }

@@ -272,7 +272,7 @@ macro_rules! impl_decode_via_ark {
         }
         */
     
-        fn skip<I: Input>(input: &mut I) -> Result<(), ark_scale::scale::Error> {
+        fn skip<I: ark_scale::scale::Input>(input: &mut I) -> Result<(), ark_scale::scale::Error> {
             <ark_scale::ArkScale<Self> as ark_scale::scale::Decode>::skip(input)
         }
     
@@ -292,7 +292,7 @@ macro_rules! impl_encode_via_ark {
             a.size_hint()
         }
     
-        fn encode_to<O: Output + ?Sized>(&self, dest: &mut O) {
+        fn encode_to<O: ark_scale::scale::Output + ?Sized>(&self, dest: &mut O) {
             let a: ark_scale::ArkScaleRef<Self> = ark_scale::ArkScaleRef(self);
             a.encode_to(dest)
         }

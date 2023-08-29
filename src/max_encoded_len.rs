@@ -16,9 +16,15 @@ pub trait ArkScaleMaxEncodedLen {
    fn max_encoded_len() -> usize;
 }
 
+impl ArkScaleMaxEncodedLen for () {
+    #[inline]
+    fn max_encoded_len() -> usize { 0 }
+}
+
 impl<T> MaxEncodedLen for ArkScale<T, WIRE> 
 where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
 {
+    #[inline]
     fn max_encoded_len() -> usize {
         <T as ArkScaleMaxEncodedLen>::max_encoded_len()
     }
@@ -27,6 +33,7 @@ where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
 impl<'a,T> MaxEncodedLen for ArkScaleRef<'a,T, WIRE> 
 where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
 {
+    #[inline]
     fn max_encoded_len() -> usize {
         <T as ArkScaleMaxEncodedLen>::max_encoded_len()
     }

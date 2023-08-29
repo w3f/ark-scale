@@ -1,5 +1,5 @@
 
-use crate::{ArkScaleMaxEncodedLen}; // ArkScale,ArkScaleRef,ConstEncodedLen
+use crate::{self as ark_scale, ArkScaleMaxEncodedLen}; // ArkScale,ArkScaleRef,ConstEncodedLen
 
 use ark_ff::fields::models::*;
 

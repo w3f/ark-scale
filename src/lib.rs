@@ -333,11 +333,11 @@ macro_rules! impl_scale_via_ark {
     ($t:ty) => {
 
 impl Decode for $t {
-    impl_decode_via_ark!();
+    ark_scale::impl_decode_via_ark!();
 }
 
 impl Encode for $t {
-    impl_encode_via_ark!();
+    ark_scale::impl_encode_via_ark!();
 }
 
 impl ark_scale::scale::EncodeLike for $t {}
@@ -351,7 +351,7 @@ impl ark_scale::scale::EncodeLike for $t {}
 #[macro_export]
 macro_rules! impl_body_max_encode_len {
     () => {
-        crate::impl_body_max_encode_len!(Self);
+        ark_scale::impl_body_max_encode_len!(Self);
     };
     ($t:ty) => {
         #[inline]

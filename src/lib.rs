@@ -106,10 +106,6 @@ impl<T, const U: Usage> From<T> for ArkScale<T, U> {
     }
 }
 
-// impl<'a,T: Clone, const U: Usage> From<&'a T> for ArkScale<T,U> {
-//     fn from(t: &'a T) -> ArkScale<T,U> { ArkScale(t.clone()) }
-// }
-
 impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T, U> {
     fn decode<I: Input>(input: &mut I) -> Result<Self, scale::Error> {
         <T as CanonicalDeserialize>::deserialize_with_mode(
@@ -127,7 +123,7 @@ impl<T: CanonicalDeserialize, const U: Usage> Decode for ArkScale<T, U> {
 }
 
 const OOPS: &'static str =
-    "Arkworks serialization failed, but Scale cannot handle serialization failures.  As ark_scale::rw::OutputAsWrite cannot fail, and ark_serialize_derive cannot introduce fresh falures, you have a non-derived `impl<..> ark_serialize::CanonicalSerialize` which fails, which violates usage conditions from ark-scale/README.md..";
+    "Arkworks serialization failed, but Scale cannot handle serialization failures.  As ark_scale::rw::OutputAsWrite cannot fail, and ark_serialize_derive cannot introduce fresh falures, you have a non-derived `impl<..> ark_serialize::CanonicalSerialize` which fails, which violates usage conditions from ark-scale/README.md.";
     // You could usually verify this condition by reading results like
     // git clone https://github.com/arkworks-rs/algebra
     // cd algebra

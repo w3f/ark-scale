@@ -31,4 +31,5 @@ git clone https://github.com/arkworks-rs/algebra
 cd algebra
 grep -r --include '*.rs' 'CanonicalSerialize for' -A 10 ff* ec* poly/ | less
 ```
+This becomes slightly harder if [Implementable trait aliases](https://github.com/rust-lang/rfcs/pull/3437) lands.
 

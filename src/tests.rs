@@ -89,8 +89,8 @@ where
 {
     run_test::<T, WIRE>();
     run_test::<T, { make_usage(Compress::Yes, Validate::No) }>();
-    // run_test::<T,{ make_usage(Compress::No, Validate::Yes) }>();
-    run_test::<T, HOST>();
+    run_test::<T,{ make_usage(Compress::No, Validate::Yes) }>();
+    run_test::<T, HOST_CALL>();
 }
 
 #[test]

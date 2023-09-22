@@ -94,7 +94,7 @@ pub const WIRE: Usage = make_usage(Compress::Yes, Validate::Yes);
 /// ArkScale usage which neither compresses nor validates inputs,
 /// only for usage in host calls and on-chain storage where the runtime already performed
 /// validation checks.
-pub const HOST: Usage = make_usage(Compress::No, Validate::No);
+pub const HOST_CALL: Usage = make_usage(Compress::No, Validate::No);
 
 /// Arkworks type wrapped for serialization by Scale
 #[derive(Clone, Eq, PartialEq, Debug)] // CanonicalSerialize, CanonicalDeserialize

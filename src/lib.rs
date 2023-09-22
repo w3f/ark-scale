@@ -153,14 +153,14 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
     }
 }
 
-impl<T: 'static + CanonicalSerialize + ArkScaleMaxEncodedLen, const U: Usage> TypeInfo for ArkScale<T, U> {
+impl<T: 'static + ArkScaleMaxEncodedLen, const U: Usage> TypeInfo for ArkScale<T, U> {
     type Identity = Self;
 
     fn type_info() -> scale_info::Type {
         let path = scale_info::Path::new(core::any::type_name::<Self>(), module_path!());
         let array_type_def = scale_info::TypeDefArray {
-            len: <Self as MaxEncodedLen>::max_encoded_len() as u32,
-            type_param: scale_info::MetaType::new::<Self>(),
+            len: T::max_encoded_len(is_compressed(U)) as u32,
+            type_param: scale_info::MetaType::new::<u8>(),
         };
         let type_def = scale_info::TypeDef::Array(array_type_def);
         scale_info::Type { path, type_params: Vec::new(), type_def, docs: Vec::new() }

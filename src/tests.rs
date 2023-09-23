@@ -2,7 +2,7 @@ use ark_std::{cmp::PartialEq, fmt::Debug, vec::Vec, UniformRand}; // io::{self, 
 
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
-use parity_scale_codec::{Decode, Encode};
+use scale_codec::{Decode, Encode};
 
 use crate::{self as ark_scale, *};
 
@@ -89,7 +89,7 @@ where
 {
     run_test::<T, WIRE>();
     run_test::<T, { make_usage(Compress::Yes, Validate::No) }>();
-    // run_test::<T,{ make_usage(Compress::No, Validate::Yes) }>();
+    run_test::<T,{ make_usage(Compress::No, Validate::Yes) }>();
     run_test::<T, HOST_CALL>();
 }
 

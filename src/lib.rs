@@ -22,8 +22,9 @@ use ark_serialize::{
 };
 pub use ark_serialize::{self as ark_serialize};
 
-pub use parity_scale_codec::{self as scale, MaxEncodedLen}; // max_encoded_len::ConstEncodedLen
+pub use scale_codec::{self as scale, MaxEncodedLen}; // max_encoded_len::ConstEncodedLen
 use scale::{Decode, Encode, EncodeLike, Input, Output};
+use scale_info::TypeInfo;
 // type ScaleResult<T> = Result<T,scale::Error>;
 
 pub mod rw;
@@ -91,7 +92,7 @@ pub const fn is_validated(u: Usage) -> Validate {
 pub const WIRE: Usage = make_usage(Compress::Yes, Validate::Yes);
 
 /// ArkScale usage which neither compresses nor validates inputs,
-/// only for usage in host calls where the runtime already performed
+/// only for usage in host calls and on-chain storage where the runtime already performed
 /// validation checks.
 pub const HOST_CALL: Usage = make_usage(Compress::No, Validate::No);
 
@@ -149,6 +150,20 @@ impl<T: CanonicalSerialize, const U: Usage> Encode for ArkScale<T, U> {
 
     fn encoded_size(&self) -> usize {
         self.0.serialized_size(is_compressed(U))
+    }
+}
+
+impl<T: 'static + ArkScaleMaxEncodedLen, const U: Usage> TypeInfo for ArkScale<T, U> {
+    type Identity = Self;
+
+    fn type_info() -> scale_info::Type {
+        let path = scale_info::Path::new(core::any::type_name::<Self>(), module_path!());
+        let array_type_def = scale_info::TypeDefArray {
+            len: T::max_encoded_len(is_compressed(U)) as u32,
+            type_param: scale_info::MetaType::new::<u8>(),
+        };
+        let type_def = scale_info::TypeDef::Array(array_type_def);
+        scale_info::Type { path, type_params: Vec::new(), type_def, docs: Vec::new() }
     }
 }
 
@@ -327,17 +342,15 @@ macro_rules! impl_encode_via_ark {
 #[macro_export]
 macro_rules! impl_scale_via_ark {
     ($t:ty) => {
+        impl Decode for $t {
+            ark_scale::impl_decode_via_ark!();
+        }
 
-impl Decode for $t {
-    ark_scale::impl_decode_via_ark!();
-}
+        impl Encode for $t {
+            ark_scale::impl_encode_via_ark!();
+        }
 
-impl Encode for $t {
-    ark_scale::impl_encode_via_ark!();
-}
-
-impl ark_scale::scale::EncodeLike for $t {}
-
+        impl ark_scale::scale::EncodeLike for $t {}
     }
 } // macro_rules! impl_scale_via_ark
 
@@ -351,9 +364,9 @@ macro_rules! impl_body_max_encode_len {
     };
     ($t:ty) => {
         #[inline]
-        fn max_encoded_len() -> usize {
+        fn max_encoded_len(compress: ark_serialize::Compress) -> usize {
             use ark_serialize::{CanonicalSerialize}; 
-            <$t as ark_std::Zero>::zero().compressed_size()
+            <$t as ark_std::Zero>::zero().serialized_size(compress)
         }
     };
 }

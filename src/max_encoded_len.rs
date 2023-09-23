@@ -1,6 +1,7 @@
 
 use crate::{
-    ArkScale,ArkScaleRef,WIRE,
+    is_compressed, Usage,
+    ArkScale,ArkScaleRef,
     MaxEncodedLen,
     scale::{self, Decode, Encode, EncodeLike, Input, Output}, // ConstEncodedLen
 };
@@ -17,29 +18,29 @@ use ark_serialize::{CanonicalSerialize,CanonicalDeserialize,Compress,Validate};
 /// Also wrappers can improve documentation and errors.
 pub trait ArkScaleMaxEncodedLen {
     /// Upper bound, in bytes, of the maximum encoded size of this item.
-   fn max_encoded_len() -> usize;
+    fn max_encoded_len(compress: Compress) -> usize;
 }
 
 impl ArkScaleMaxEncodedLen for () {
     #[inline]
-    fn max_encoded_len() -> usize { 0 }
+    fn max_encoded_len(_: Compress) -> usize { 0 }
 }
 
-impl<T> MaxEncodedLen for ArkScale<T, WIRE> 
-where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
+impl<T, const U: Usage> MaxEncodedLen for ArkScale<T, U> 
+    where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
 {
     #[inline]
     fn max_encoded_len() -> usize {
-        <T as ArkScaleMaxEncodedLen>::max_encoded_len()
+        <T as ArkScaleMaxEncodedLen>::max_encoded_len(is_compressed(U))
     }
 }
 
-impl<'a,T> MaxEncodedLen for ArkScaleRef<'a,T, WIRE> 
-where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
+impl<'a, T, const U: Usage> MaxEncodedLen for ArkScaleRef<'a, T, U> 
+    where T: CanonicalSerialize+ArkScaleMaxEncodedLen,
 {
     #[inline]
     fn max_encoded_len() -> usize {
-        <T as ArkScaleMaxEncodedLen>::max_encoded_len()
+        <T as ArkScaleMaxEncodedLen>::max_encoded_len(is_compressed(U))
     }
 }
 
@@ -105,12 +106,12 @@ impl<T: CanonicalSerialize, const L: usize> Encode for ArkScaleLen<T, L> {
 
     fn encoded_size(&self) -> usize {
         let l = self.0.serialized_size(Compress::Yes);
-        debug_assert!(l <= L, "ArkScaleLen has inforrect length specified.");
+        debug_assert!(l <= L, "ArkScaleLen has incorrect length specified.");
         l
     }
 }
 
 impl<T: CanonicalDeserialize, const L: usize> ArkScaleMaxEncodedLen for ArkScaleLen<T, L> {
     /// Upper bound, in bytes, of the maximum encoded size of this item.
-   fn max_encoded_len() -> usize { L }
+   fn max_encoded_len(_: Compress) -> usize { L }
 }

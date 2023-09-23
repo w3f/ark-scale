@@ -50,7 +50,7 @@ where
         // let e1 = <T as CanonicalDeserialize>::deserialize_with_mode(super::InputAsRead(&mut c.as_slice()), is_compressed(U), is_validated(U))
         // .map(|v| ArkScale(v)).map_err(ark_error_to_scale_error).unwrap();
         // assert_eq!(a, &e1.0);
-        println!("{:x}: {}", U, c.len());
+        // println!("{:x}: {}", U, c.len());
         // let mut d = c.as_slice();
         // let e: ArkScale<T> = ArkScale::decode(&mut d).unwrap();
         let e: ArkScale<T, U> = <ArkScale<T, U> as Decode>::decode(&mut c.as_slice()).unwrap();

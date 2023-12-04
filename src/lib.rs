@@ -157,7 +157,7 @@ impl<T: 'static + ArkScaleMaxEncodedLen, const U: Usage> TypeInfo for ArkScale<T
     type Identity = Self;
 
     fn type_info() -> scale_info::Type {
-        let path = scale_info::Path::new(core::any::type_name::<Self>(), module_path!());
+        let path = scale_info::Path::new("ArkScale", module_path!());
         let array_type_def = scale_info::TypeDefArray {
             len: T::max_encoded_len(is_compressed(U)) as u32,
             type_param: scale_info::MetaType::new::<u8>(),

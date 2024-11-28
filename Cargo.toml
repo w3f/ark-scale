@@ -2,7 +2,7 @@
 name = "ark-scale"
 description = "Arkworks serialization wrapped in Parity SCALE codec"
 authors = ["Jeff Burdges <jeff@web3.foundation>"]
-version = "0.0.12"
+version = "0.0.13"
 repository = "https://github.com/w3f/ark-scale"
 edition = "2021"
 license = "MIT/Apache-2.0"
@@ -10,12 +10,12 @@ license = "MIT/Apache-2.0"
 
 [dependencies]
 scale-codec = { package = "parity-scale-codec", version = "3.6", default-features = false, features = ["max-encoded-len"] }
-scale-info = { version = "2.5", default-features = false }
-ark-std = { version = "0.4", default-features = false }
-ark-serialize = { version = "0.4.2", default-features = false, features = [ "derive" ] }
+scale-info = { version = "2.11", default-features = false }
+ark-std = { version = "0.5", default-features = false }
+ark-serialize = { version = "0.5", default-features = false, features = [ "derive" ] }
 
-ark-ff = { version = "0.4.2", default-features = false, optional = true }
-ark-ec = { version = "0.4.2", default-features = false, optional = true }
+ark-ff = { version = "0.5", default-features = false, optional = true }
+ark-ec = { version = "0.5", default-features = false, optional = true }
 
 # ark-serialize-derive = { version = "0.4", default-features = false }
 # arrayvec = { version = "0.7.2", default-features = false }
@@ -23,8 +23,8 @@ ark-ec = { version = "0.4.2", default-features = false, optional = true }
 
 
 [dev-dependencies]
-ark-bls12-381 = { version = "0.4" }
-ark-ed25519 = { version = "0.4" }
+ark-bls12-381 = { version = "0.5" }
+ark-ed25519 = { version = "0.5" }
 rand_core = { version = "0.6", features = [ "getrandom" ] }
 
 

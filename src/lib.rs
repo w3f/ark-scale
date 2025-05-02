@@ -221,7 +221,10 @@ where
     let first = iter.next();
     let mut vec = if let Some(ref e) = first {
         let size = e.borrow().serialized_size(is_compressed(usage));
-        Vec::with_capacity(LL + size * (1 + len))
+        let size = size.checked_mul(1 + len)
+            .and_then(|x| x.checked_add(LL))
+            .ok_or(SerializationError::NotEnoughSpace)?;
+        Vec::with_capacity(size)
     } else {
         Vec::with_capacity(LL)
     };
